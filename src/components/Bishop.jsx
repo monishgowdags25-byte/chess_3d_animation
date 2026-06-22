@@ -2,11 +2,13 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function Bishop({ wood, position = [-2.6, 0, -1.0] }) {
+export default function Bishop({ wood }) {
   const groupRef = useRef();
   const eyeLidsRef = useRef();
   const leftEyeRef = useRef();
   const rightEyeRef = useRef();
+  const pupilLeftRef = useRef();
+  const pupilRightRef = useRef();
 
   // Spring entrance animation variables
   const currentY = useRef(6);
@@ -17,6 +19,9 @@ export default function Bishop({ wood, position = [-2.6, 0, -1.0] }) {
   // Blinking/sleepy eyes logic
   const blinkTimer = useRef(Math.random() * 4 + 3);
   const blinkDuration = 0.12;
+
+  // Eye movement rotation ref
+  const currentEyeRotation = useRef({ x: 0, y: 0 });
 
   // Generate Bishop lower body Lathe profile points (up to collar)
   const bodyPoints = useMemo(() => {
@@ -97,6 +102,20 @@ export default function Bishop({ wood, position = [-2.6, 0, -1.0] }) {
     if (eyeLidsRef.current) {
       eyeLidsRef.current.scale.y = lidScaleY;
     }
+
+    // 4. Eye movement tracking the mouse pointer smoothly (scaled down because eyes are in a narrow slit)
+    const targetX = state.pointer.x * 0.022;
+    const targetY = state.pointer.y * 0.015;
+    
+    currentEyeRotation.current.x += (targetX - currentEyeRotation.current.x) * 0.15;
+    currentEyeRotation.current.y += (targetY - currentEyeRotation.current.y) * 0.15;
+    
+    if (pupilLeftRef.current && pupilRightRef.current) {
+      pupilLeftRef.current.position.x = currentEyeRotation.current.x;
+      pupilLeftRef.current.position.y = currentEyeRotation.current.y;
+      pupilRightRef.current.position.x = currentEyeRotation.current.x;
+      pupilRightRef.current.position.y = currentEyeRotation.current.y;
+    }
   });
 
   const woodMaterial = (
@@ -111,7 +130,7 @@ export default function Bishop({ wood, position = [-2.6, 0, -1.0] }) {
   );
 
   return (
-    <group ref={groupRef} position={position}>
+    <group ref={groupRef} position={[-2.6, 6, -1.0]}>
       {/* 360-degree Lower Body */}
       <mesh castShadow receiveShadow>
         <latheGeometry args={[bodyPoints, 32]} />
@@ -154,16 +173,19 @@ export default function Bishop({ wood, position = [-2.6, 0, -1.0] }) {
             <sphereGeometry args={[0.065, 12, 12]} />
             <meshStandardMaterial color="#eee8e2" roughness={0.5} />
           </mesh>
-          {/* Sleepy half-closed pupil */}
-          <mesh position={[0.005, -0.01, 0.045]}>
-            <sphereGeometry args={[0.038, 8, 8]} />
-            <meshStandardMaterial color="#0c0c0c" roughness={0.1} />
-          </mesh>
-          {/* Catchlight */}
-          <mesh position={[0.015, 0.005, 0.075]}>
-            <sphereGeometry args={[0.012, 8, 8]} />
-            <meshBasicMaterial color="#ffffff" />
-          </mesh>
+          {/* Grouped Pupil and Catchlight for mouse tracking */}
+          <group ref={pupilLeftRef}>
+            {/* Sleepy half-closed pupil */}
+            <mesh position={[0.005, -0.01, 0.045]}>
+              <sphereGeometry args={[0.038, 8, 8]} />
+              <meshStandardMaterial color="#0c0c0c" roughness={0.1} />
+            </mesh>
+            {/* Catchlight */}
+            <mesh position={[0.015, 0.005, 0.075]}>
+              <sphereGeometry args={[0.012, 8, 8]} />
+              <meshBasicMaterial color="#ffffff" />
+            </mesh>
+          </group>
         </group>
 
         {/* Right Eye */}
@@ -173,16 +195,19 @@ export default function Bishop({ wood, position = [-2.6, 0, -1.0] }) {
             <sphereGeometry args={[0.065, 12, 12]} />
             <meshStandardMaterial color="#eee8e2" roughness={0.5} />
           </mesh>
-          {/* Sleepy half-closed pupil */}
-          <mesh position={[-0.005, -0.01, 0.045]}>
-            <sphereGeometry args={[0.038, 8, 8]} />
-            <meshStandardMaterial color="#0c0c0c" roughness={0.1} />
-          </mesh>
-          {/* Catchlight */}
-          <mesh position={[-0.015, 0.005, 0.075]}>
-            <sphereGeometry args={[0.012, 8, 8]} />
-            <meshBasicMaterial color="#ffffff" />
-          </mesh>
+          {/* Grouped Pupil and Catchlight for mouse tracking */}
+          <group ref={pupilRightRef}>
+            {/* Sleepy half-closed pupil */}
+            <mesh position={[-0.005, -0.01, 0.045]}>
+              <sphereGeometry args={[0.038, 8, 8]} />
+              <meshStandardMaterial color="#0c0c0c" roughness={0.1} />
+            </mesh>
+            {/* Catchlight */}
+            <mesh position={[-0.015, 0.005, 0.075]}>
+              <sphereGeometry args={[0.012, 8, 8]} />
+              <meshBasicMaterial color="#ffffff" />
+            </mesh>
+          </group>
         </group>
 
         {/* 

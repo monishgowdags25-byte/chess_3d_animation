@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function Pawn({ wood, position = [0.8, 0, 1.3] }) {
+export default function Pawn({ wood }) {
   const groupRef = useRef();
   const leftEyeRef = useRef();
   const rightEyeRef = useRef();
@@ -92,23 +92,18 @@ export default function Pawn({ wood, position = [0.8, 0, 1.3] }) {
       rightEyeRef.current.scale.y = eyeScaleY;
     }
 
-    // 4. Eye movement (follows pupil looking around)
-    eyeMoveTimer.current -= delta;
-    if (eyeMoveTimer.current <= 0) {
-      eyeMoveTimer.current = Math.random() * 3 + 1.8;
-      targetEyeRotation.current = {
-        x: (Math.random() - 0.5) * 0.07,
-        y: (Math.random() - 0.5) * 0.10,
-      };
-    }
-    currentEyeRotation.current.x += (targetEyeRotation.current.x - currentEyeRotation.current.x) * 0.1;
-    currentEyeRotation.current.y += (targetEyeRotation.current.y - currentEyeRotation.current.y) * 0.1;
+    // 4. Eye movement tracking the mouse pointer smoothly
+    const targetX = state.pointer.x * 0.035;
+    const targetY = state.pointer.y * 0.025;
+    
+    currentEyeRotation.current.x += (targetX - currentEyeRotation.current.x) * 0.15;
+    currentEyeRotation.current.y += (targetY - currentEyeRotation.current.y) * 0.15;
     
     if (pupilLeftRef.current && pupilRightRef.current) {
-      pupilLeftRef.current.position.x = currentEyeRotation.current.y;
-      pupilLeftRef.current.position.y = currentEyeRotation.current.x;
-      pupilRightRef.current.position.x = currentEyeRotation.current.y;
-      pupilRightRef.current.position.y = currentEyeRotation.current.x;
+      pupilLeftRef.current.position.x = currentEyeRotation.current.x;
+      pupilLeftRef.current.position.y = currentEyeRotation.current.y;
+      pupilRightRef.current.position.x = currentEyeRotation.current.x;
+      pupilRightRef.current.position.y = currentEyeRotation.current.y;
     }
   });
 
@@ -124,7 +119,7 @@ export default function Pawn({ wood, position = [0.8, 0, 1.3] }) {
   );
 
   return (
-    <group ref={groupRef} position={position}>
+    <group ref={groupRef} position={[0.8, 6, 1.3]}>
       {/* Lathe Base */}
       <mesh castShadow receiveShadow>
         <latheGeometry args={[basePoints, 32]} />
