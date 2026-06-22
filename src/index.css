@@ -439,3 +439,95 @@ html, body, #root {
   }
 }
 
+/* Portrait HD Frame and Nav Arrows for individual pieces */
+.portrait-frame {
+  max-width: 480px !important;
+  max-height: 480px !important;
+  border-radius: 24px;
+  background: #eae3da;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 45px rgba(45, 25, 16, 0.12);
+}
+
+.portrait-image {
+  object-fit: cover !important;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portrait-frame:hover .portrait-image {
+  transform: scale(1.02);
+}
+
+.nav-arrow-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: var(--text-primary);
+  font-size: 1.4rem;
+  font-weight: 300;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(45, 25, 16, 0.08);
+  pointer-events: auto;
+}
+
+.prev-btn {
+  left: 16px;
+}
+
+.next-btn {
+  right: 16px;
+}
+
+.nav-arrow-btn:hover {
+  background: var(--text-primary);
+  color: #fffcf8;
+  border-color: var(--text-primary);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 16px rgba(45, 25, 16, 0.15);
+}
+
+.nav-arrow-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.piece-title-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(45, 25, 16, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fffcf8;
+  padding: 0.4rem 1rem;
+  border-radius: 30px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  z-index: 15;
+}
+
+@media (max-width: 768px) {
+  .portrait-frame {
+    max-width: 85vw !important;
+    max-height: 85vw !important;
+    margin-top: 5rem;
+  }
+}

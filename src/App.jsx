@@ -12,13 +12,41 @@ import Pawn from './components/Pawn';
 import Lighting from './components/Lighting';
 import Environment from './components/Environment';
 import confetti from 'canvas-confetti';
-import piecesHd from './assets/pieces_hd.png';
+
+// Import individual high-definition piece images
+import kingHd from './assets/king_hd.png';
+import queenHd from './assets/queen_hd.png';
+import bishopHd from './assets/bishop_hd.png';
+import knightHd from './assets/knight_hd.png';
+import pawnHd from './assets/pawn_hd.png';
 
 export default function App() {
   const { darkWood, lightWood } = useWoodTextures();
-  const [viewMode, setViewMode] = useState('3d'); // '3d' or '2d'
+  const [viewMode, setViewMode] = useState('2d'); // Set default to 2D view to display the individual HD pieces first
   const [animationKey, setAnimationKey] = useState(0);
   const [selectedPiece, setSelectedPiece] = useState('king');
+
+  const piecesList = ['king', 'queen', 'bishop', 'knight', 'pawn'];
+
+  const pieceImages = {
+    king: kingHd,
+    queen: queenHd,
+    bishop: bishopHd,
+    knight: knightHd,
+    pawn: pawnHd,
+  };
+
+  const handlePrevPiece = () => {
+    const currentIndex = piecesList.indexOf(selectedPiece);
+    const prevIndex = (currentIndex - 1 + piecesList.length) % piecesList.length;
+    setSelectedPiece(piecesList[prevIndex]);
+  };
+
+  const handleNextPiece = () => {
+    const currentIndex = piecesList.indexOf(selectedPiece);
+    const nextIndex = (currentIndex + 1) % piecesList.length;
+    setSelectedPiece(piecesList[nextIndex]);
+  };
 
   const triggerReset = () => {
     setAnimationKey(prev => prev + 1);
@@ -108,67 +136,36 @@ export default function App() {
         </div>
       )}
 
-      {/* 2D High-Definition Art Gallery View */}
+      {/* 2D High-Definition Art Gallery View (Individual Portrait Mode) */}
       {viewMode === '2d' && (
         <div className="hd-gallery-wrapper animate-fade-in">
-          <div className="hd-image-frame">
-            <img src={piecesHd} alt="Cute Chess Mates HD" className="hd-image" />
+          <div className="hd-image-frame portrait-frame">
+            <img 
+              src={pieceImages[selectedPiece]} 
+              alt={characterDescriptions[selectedPiece].name} 
+              className="hd-image portrait-image" 
+            />
             
-            {/* Interactive Hotspots pointing to the characters in the HD image */}
-            {/* Bishop (Far Left) */}
+            {/* Arrow Navigation controls overlayed inside the frame */}
             <button 
-              className={`hotspot-btn ${selectedPiece === 'bishop' ? 'active' : ''}`}
-              style={{ left: '20%', top: '56%' }}
-              onClick={() => setSelectedPiece('bishop')}
-              title="Select Bishop"
+              className="nav-arrow-btn prev-btn" 
+              onClick={handlePrevPiece}
+              title="Previous Character"
             >
-              <div className="pulse-ring"></div>
-              <div className="pulse-dot"></div>
+              ⟨
+            </button>
+            <button 
+              className="nav-arrow-btn next-btn" 
+              onClick={handleNextPiece}
+              title="Next Character"
+            >
+              ⟩
             </button>
 
-            {/* Queen (Left Center) */}
-            <button 
-              className={`hotspot-btn ${selectedPiece === 'queen' ? 'active' : ''}`}
-              style={{ left: '35%', top: '60%' }}
-              onClick={() => setSelectedPiece('queen')}
-              title="Select Queen"
-            >
-              <div className="pulse-ring"></div>
-              <div className="pulse-dot"></div>
-            </button>
-
-            {/* King (Center) */}
-            <button 
-              className={`hotspot-btn ${selectedPiece === 'king' ? 'active' : ''}`}
-              style={{ left: '50%', top: '44%' }}
-              onClick={() => setSelectedPiece('king')}
-              title="Select King"
-            >
-              <div className="pulse-ring"></div>
-              <div className="pulse-dot"></div>
-            </button>
-
-            {/* Pawn (Front Right) */}
-            <button 
-              className={`hotspot-btn ${selectedPiece === 'pawn' ? 'active' : ''}`}
-              style={{ left: '63%', top: '74%' }}
-              onClick={() => setSelectedPiece('pawn')}
-              title="Select Pawn"
-            >
-              <div className="pulse-ring"></div>
-              <div className="pulse-dot"></div>
-            </button>
-
-            {/* Knight (Far Right) */}
-            <button 
-              className={`hotspot-btn ${selectedPiece === 'knight' ? 'active' : ''}`}
-              style={{ left: '79%', top: '55%' }}
-              onClick={() => setSelectedPiece('knight')}
-              title="Select Knight"
-            >
-              <div className="pulse-ring"></div>
-              <div className="pulse-dot"></div>
-            </button>
+            {/* Float text badge indicating the piece */}
+            <div className="piece-title-overlay">
+              <span>{characterDescriptions[selectedPiece].name.toUpperCase()}</span>
+            </div>
           </div>
         </div>
       )}
@@ -182,16 +179,16 @@ export default function App() {
         {/* View Toggle Buttons */}
         <div className="view-toggle">
           <button 
+            className={`toggle-btn ${viewMode === '2d' ? 'active' : ''}`}
+            onClick={() => setViewMode('2d')}
+          >
+            2D HD Portrait
+          </button>
+          <button 
             className={`toggle-btn ${viewMode === '3d' ? 'active' : ''}`}
             onClick={() => setViewMode('3d')}
           >
             3D Interactive
-          </button>
-          <button 
-            className={`toggle-btn ${viewMode === '2d' ? 'active' : ''}`}
-            onClick={() => setViewMode('2d')}
-          >
-            2D Ultra-HD Art
           </button>
         </div>
       </header>
@@ -225,12 +222,12 @@ export default function App() {
               Replay Drop Intro 💫
             </button>
           ) : (
-            <div className="gallery-tag">Ultra-HD Art Mode</div>
+            <div className="gallery-tag">Individual Art Mode</div>
           )}
           <p className="hint-text">
             {viewMode === '3d' 
               ? 'Drag to rotate the camera. Pinch/scroll to zoom.' 
-              : 'Click the glowing hotspots to inspect individual characters.'}
+              : 'Click the arrows or tabs above to view other individual high-definition chess pieces.'}
           </p>
         </div>
       </div>
