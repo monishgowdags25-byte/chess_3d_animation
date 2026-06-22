@@ -22,9 +22,15 @@ import pawnHd from './assets/pawn_hd.png';
 
 export default function App() {
   const { darkWood, lightWood } = useWoodTextures();
-  const [viewMode, setViewMode] = useState('2d'); // Set default to 2D view to display the individual HD pieces first
+  const [viewMode, setViewMode] = useState('3d'); // Default to 3D to showcase the live interaction
   const [animationKey, setAnimationKey] = useState(0);
   const [selectedPiece, setSelectedPiece] = useState('king');
+  
+  // Login Form States
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const piecesList = ['king', 'queen', 'bishop', 'knight', 'pawn'];
 
@@ -50,187 +56,265 @@ export default function App() {
 
   const triggerReset = () => {
     setAnimationKey(prev => prev + 1);
-    
-    // Play a mini confetti pop for celebration
+  };
+
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    if (!email || !password) return;
+
+    setIsLoggedIn(true);
+
+    // Full screen confetti burst on login success!
     confetti({
-      particleCount: 50,
-      spread: 60,
-      origin: { y: 0.8 },
-      colors: ['#cb997e', '#ddbea9', '#ffe8d6', '#6b5b52'],
+      particleCount: 120,
+      spread: 80,
+      origin: { y: 0.6 },
+      colors: ['#cb997e', '#ddbea9', '#ffe8d6', '#6b5b52', '#b07d62'],
     });
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setEmail('');
+    setPassword('');
   };
 
   const characterDescriptions = {
     king: {
-      name: 'The King (Arthur)',
-      personality: 'Leader of the court. Majestic, warm, and highly polished. Has a big heart and a friendly smile, standing tall at the center of the board.',
-      wood: 'Rich Varnished Mahogany (Dark Wood)',
+      name: 'King Arthur',
+      tagline: 'The Noble Guardian',
+      desc: 'Arthur stands tall at the center, ensuring the court remains safe and organized.',
     },
     queen: {
-      name: 'The Queen (Gwen)',
-      personality: 'Graceful and bright. Adorned with a delicate pointed crown, she has rosy blushing cheeks and coordinates the strategy with elegance.',
-      wood: 'Lacquered Soft Maple (Light Wood)',
+      name: 'Queen Gwen',
+      tagline: 'The Brilliant Tactician',
+      desc: 'Gwen coordinates moves with speed and elegance across the board.',
     },
     bishop: {
-      name: 'The Bishop (Barnaby)',
-      personality: 'The quiet philosopher. Hooded under a split cowl, he peers out sleepily and thoughtfully from the shadows, analyzing the field.',
-      wood: 'Rich Varnished Mahogany (Dark Wood)',
+      name: 'Bishop Barnaby',
+      tagline: 'The Wise Mystic',
+      desc: 'Barnaby observes from the wings, shielding passwords with a hood.',
     },
     knight: {
-      name: 'The Knight (Barnaby)',
-      personality: 'The energetic scout. A spirited horse character looking around with wide-eyed curiosity, ready to leap over obstacles at any moment.',
-      wood: 'Rich Varnished Mahogany (Dark Wood)',
+      name: 'Knight Buster',
+      tagline: 'The Swift Scout',
+      desc: 'Buster leaps past barriers to secure the perimeter with sharp alert eyes.',
     },
     pawn: {
-      name: 'The Pawn (Pip)',
-      personality: 'The cheerful rookie. The smallest piece on the board, but overflowing with optimism and a wide, friendly grin. He always takes things one step at a time.',
-      wood: 'Lacquered Soft Maple (Light Wood)',
+      name: 'Pawn Pip',
+      tagline: 'The Optimistic Helper',
+      desc: 'Pip welcomes all travelers with a cheerful grin, taking things step by step.',
     }
   };
 
   return (
-    <main className="app-container">
+    <main className="app-container split-screen">
       {/* Background Subtle Gradient overlay */}
       <div className="bg-gradient" />
 
-      {/* 3D Render View */}
-      {viewMode === '3d' && (
-        <div className="canvas-wrapper animate-fade-in">
-          <Canvas
-            shadows
-            camera={{ position: [-1.8, 2.5, 5.8], fov: 42 }}
-          >
-            <color attach="background" args={["#e4ded5"]} />
-            <fog attach="fog" args={["#e4ded5", 8, 16]} />
-            <Lighting />
-            <group key={animationKey} position={[0, -0.2, 0]}>
-              <ChessBoard darkWood={darkWood} lightWood={lightWood} />
-              <King wood={darkWood} />
-              <Queen wood={lightWood} />
-              <Bishop wood={darkWood} />
-              <Knight wood={darkWood} />
-              <Pawn wood={lightWood} />
-            </group>
-            <Environment />
-            <OrbitControls
-              enableDamping
-              dampingFactor={0.05}
-              target={[0, 1.0, 0]}
-              maxPolarAngle={Math.PI / 2.08}
-              minDistance={2.8}
-              maxDistance={9}
-            />
-            <EffectComposer>
-              <DepthOfField
-                target={[0, 1.0, 0]}
-                focalLength={0.32}
-                bokehScale={3.5}
-              />
-              <Bloom
-                intensity={0.4}
-                luminanceThreshold={0.85}
-                luminanceSmoothing={0.9}
-              />
-            </EffectComposer>
-          </Canvas>
-        </div>
-      )}
+      {/* LEFT PANEL: Login Form Interface */}
+      <section className="login-side-panel">
+        <header className="login-header">
+          <div className="logo-badge">🛡️ Chess Portal</div>
+          <h1>CHESS MATES</h1>
+          <p className="subtitle">Enter the grand archives and select your board companion.</p>
+        </header>
 
-      {/* 2D High-Definition Art Gallery View (Individual Portrait Mode) */}
-      {viewMode === '2d' && (
-        <div className="hd-gallery-wrapper animate-fade-in">
-          <div className="hd-image-frame portrait-frame">
-            <img 
-              src={pieceImages[selectedPiece]} 
-              alt={characterDescriptions[selectedPiece].name} 
-              className="hd-image portrait-image" 
-            />
+        {isLoggedIn ? (
+          /* Logged In Welcome Screen */
+          <div className="glass-panel login-card welcome-card animate-fade-in">
+            <div className="success-icon">🏆</div>
+            <h2>Welcome Back, Companion!</h2>
+            <p className="welcome-desc">
+              You have successfully entered the realm, escorted by <strong>{characterDescriptions[selectedPiece].name}</strong>.
+            </p>
             
-            {/* Arrow Navigation controls overlayed inside the frame */}
-            <button 
-              className="nav-arrow-btn prev-btn" 
-              onClick={handlePrevPiece}
-              title="Previous Character"
-            >
-              ⟨
-            </button>
-            <button 
-              className="nav-arrow-btn next-btn" 
-              onClick={handleNextPiece}
-              title="Next Character"
-            >
-              ⟩
-            </button>
+            <div className="companion-avatar-view">
+              <img src={pieceImages[selectedPiece]} alt={selectedPiece} className="avatar-img" />
+              <h4>{characterDescriptions[selectedPiece].name}</h4>
+              <span className="companion-tagline">{characterDescriptions[selectedPiece].tagline}</span>
+            </div>
 
-            {/* Float text badge indicating the piece */}
-            <div className="piece-title-overlay">
-              <span>{characterDescriptions[selectedPiece].name.toUpperCase()}</span>
+            <button className="btn-primary full-width" onClick={handleLogout}>
+              Leave Realm 🚪
+            </button>
+          </div>
+        ) : (
+          /* Login Form Card */
+          <form className="glass-panel login-card animate-fade-in" onSubmit={handleLoginSubmit}>
+            <h2>Account Access</h2>
+            
+            <div className="form-group">
+              <label htmlFor="email">Email or Username</label>
+              <input
+                id="email"
+                type="text"
+                placeholder="companion@chess.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">Secret Scroll (Password)</label>
+              <input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onFocus={() => setIsPasswordFocused(true)}
+                onBlur={() => setIsPasswordFocused(false)}
+                required
+              />
+              <span className="password-hint">🔍 Watch the pieces as you enter your secret scroll!</span>
+            </div>
+
+            {/* Companion Selection Row */}
+            <div className="companion-selector">
+              <label>Select Your Board Companion</label>
+              <div className="companion-grid">
+                {piecesList.map((piece) => (
+                  <button
+                    key={piece}
+                    type="button"
+                    className={`companion-btn ${selectedPiece === piece ? 'active' : ''}`}
+                    onClick={() => setSelectedPiece(piece)}
+                    title={characterDescriptions[piece].name}
+                  >
+                    <span className="btn-icon">
+                      {piece === 'king' && '👑'}
+                      {piece === 'queen' && '👑'}
+                      {piece === 'bishop' && '⛪'}
+                      {piece === 'knight' && '🐴'}
+                      {piece === 'pawn' && '♟️'}
+                    </span>
+                    <span className="btn-label">{piece.toUpperCase()}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button type="submit" className="btn-primary full-width">
+              Enter the Realm 🔑
+            </button>
+          </form>
+        )}
+
+        {/* Selected Companion Personality Card */}
+        <div className="glass-panel companion-card animate-fade-in">
+          <h4>Companion Status</h4>
+          <h3>{characterDescriptions[selectedPiece].name}</h3>
+          <span className="spec-label">{characterDescriptions[selectedPiece].tagline}</span>
+          <p className="companion-desc">{characterDescriptions[selectedPiece].desc}</p>
+        </div>
+      </section>
+
+      {/* RIGHT PANEL: 3D Visualizer & 2D Art Gallery */}
+      <section className="display-side-panel">
+        
+        {/* Gallery/Scene Toggle at the top of display panel */}
+        <div className="display-header-controls">
+          <div className="view-toggle">
+            <button 
+              className={`toggle-btn ${viewMode === '2d' ? 'active' : ''}`}
+              onClick={() => setViewMode('2d')}
+            >
+              2D HD Art
+            </button>
+            <button 
+              className={`toggle-btn ${viewMode === '3d' ? 'active' : ''}`}
+              onClick={() => setViewMode('3d')}
+            >
+              3D Live Scene
+            </button>
+          </div>
+        </div>
+
+        {/* 3D Real-time Render View */}
+        {viewMode === '3d' && (
+          <div className="canvas-wrapper animate-fade-in">
+            <Canvas
+              shadows
+              camera={{ position: [-1.8, 2.5, 5.8], fov: 42 }}
+            >
+              <color attach="background" args={["#e4ded5"]} />
+              <fog attach="fog" args={["#e4ded5", 8, 16]} />
+              <Lighting />
+              <group key={animationKey} position={[0, -0.2, 0]}>
+                <ChessBoard darkWood={darkWood} lightWood={lightWood} />
+                <King wood={darkWood} isLocked={isPasswordFocused} />
+                <Queen wood={lightWood} isLocked={isPasswordFocused} />
+                <Bishop wood={darkWood} isLocked={isPasswordFocused} />
+                <Knight wood={darkWood} isLocked={isPasswordFocused} />
+                <Pawn wood={lightWood} isLocked={isPasswordFocused} />
+              </group>
+              <Environment />
+              <OrbitControls
+                enableDamping
+                dampingFactor={0.05}
+                target={[0, 1.0, 0]}
+                maxPolarAngle={Math.PI / 2.08}
+                minDistance={2.8}
+                maxDistance={9}
+              />
+              <EffectComposer>
+                <DepthOfField
+                  target={[0, 1.0, 0]}
+                  focalLength={0.32}
+                  bokehScale={3.5}
+                />
+                <Bloom
+                  intensity={0.4}
+                  luminanceThreshold={0.85}
+                  luminanceSmoothing={0.9}
+                />
+              </EffectComposer>
+            </Canvas>
+            
+            {/* Replay drop intro control */}
+            <button className="btn-replay-intro" onClick={triggerReset} title="Replay drop entrance">
+              💫 Replay Entrance
+            </button>
+          </div>
+        )}
+
+        {/* 2D High-Definition Art Gallery View (Individual Portrait Mode) */}
+        {viewMode === '2d' && (
+          <div className="hd-gallery-wrapper animate-fade-in">
+            <div className="hd-image-frame portrait-frame">
+              <img 
+                src={pieceImages[selectedPiece]} 
+                alt={characterDescriptions[selectedPiece].name} 
+                className="hd-image portrait-image" 
+              />
+              
+              {/* Arrow Navigation controls overlayed inside the frame */}
+              <button 
+                className="nav-arrow-btn prev-btn" 
+                onClick={handlePrevPiece}
+                title="Previous Character"
+              >
+                ⟨
+              </button>
+              <button 
+                className="nav-arrow-btn next-btn" 
+                onClick={handleNextPiece}
+                title="Next Character"
+              >
+                ⟩
+              </button>
+
+              {/* Float text badge indicating the piece */}
+              <div className="piece-title-overlay">
+                <span>{characterDescriptions[selectedPiece].name.toUpperCase()}</span>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Header UI Overlay */}
-      <header className="app-header">
-        <div className="header-badge">3D Character Showcase</div>
-        <h1>Chess Mates</h1>
-        <p>An interactive Pixar-style 3D recreation of chess pieces built with React Three Fiber.</p>
-
-        {/* View Toggle Buttons */}
-        <div className="view-toggle">
-          <button 
-            className={`toggle-btn ${viewMode === '2d' ? 'active' : ''}`}
-            onClick={() => setViewMode('2d')}
-          >
-            2D HD Portrait
-          </button>
-          <button 
-            className={`toggle-btn ${viewMode === '3d' ? 'active' : ''}`}
-            onClick={() => setViewMode('3d')}
-          >
-            3D Interactive
-          </button>
-        </div>
-      </header>
-
-      {/* Interactive Control & Info Panel */}
-      <div className="glass-panel info-panel">
-        <div className="character-tabs">
-          {Object.keys(characterDescriptions).map((key) => (
-            <button
-              key={key}
-              className={`tab-btn ${selectedPiece === key ? 'active' : ''}`}
-              onClick={() => setSelectedPiece(key)}
-            >
-              {key.toUpperCase()}
-            </button>
-          ))}
-        </div>
-
-        <div className="character-info">
-          <h3>{characterDescriptions[selectedPiece].name}</h3>
-          <p className="personality-text">{characterDescriptions[selectedPiece].personality}</p>
-          <div className="wood-spec">
-            <span className="spec-label">Material Spec: </span>
-            <span className="spec-value">{characterDescriptions[selectedPiece].wood}</span>
-          </div>
-        </div>
-
-        <div className="action-row">
-          {viewMode === '3d' ? (
-            <button className="btn-primary" onClick={triggerReset}>
-              Replay Drop Intro 💫
-            </button>
-          ) : (
-            <div className="gallery-tag">Individual Art Mode</div>
-          )}
-          <p className="hint-text">
-            {viewMode === '3d' 
-              ? 'Drag to rotate the camera. Pinch/scroll to zoom.' 
-              : 'Click the arrows or tabs above to view other individual high-definition chess pieces.'}
-          </p>
-        </div>
-      </div>
+      </section>
     </main>
   );
 }

@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function Bishop({ wood }) {
+export default function Bishop({ wood, isLocked }) {
   const groupRef = useRef();
   const eyeLidsRef = useRef();
   const leftEyeRef = useRef();
@@ -87,10 +87,12 @@ export default function Bishop({ wood }) {
     groupRef.current.rotation.z = tiltZ;
     groupRef.current.rotation.x = tiltX;
 
-    // 3. Blinking logic (specifically sleepy blinking)
+    // 3. Blinking logic (specifically sleepy blinking / fully close when isLocked is active)
     blinkTimer.current -= delta;
     let lidScaleY = 1.0;
-    if (blinkTimer.current <= 0) {
+    if (isLocked) {
+      lidScaleY = 1.95; // Shut lids completely!
+    } else if (blinkTimer.current <= 0) {
       const progress = Math.abs(blinkTimer.current) / blinkDuration;
       if (progress >= 1.0) {
         blinkTimer.current = Math.random() * 5 + 4;

@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function Pawn({ wood }) {
+export default function Pawn({ wood, isLocked }) {
   const groupRef = useRef();
   const leftEyeRef = useRef();
   const rightEyeRef = useRef();
@@ -76,10 +76,12 @@ export default function Pawn({ wood }) {
     groupRef.current.rotation.z = tiltZ;
     groupRef.current.rotation.x = tiltX;
 
-    // 3. Blinking logic
+    // 3. Blinking logic (close eyes when isLocked is active)
     blinkTimer.current -= delta;
     let eyeScaleY = 1.0;
-    if (blinkTimer.current <= 0) {
+    if (isLocked) {
+      eyeScaleY = 0.05; // Closed eyes!
+    } else if (blinkTimer.current <= 0) {
       const progress = Math.abs(blinkTimer.current) / blinkDuration;
       if (progress >= 1.0) {
         blinkTimer.current = Math.random() * 4 + 3.2;
