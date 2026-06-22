@@ -12,9 +12,11 @@ import Pawn from './components/Pawn';
 import Lighting from './components/Lighting';
 import Environment from './components/Environment';
 import confetti from 'canvas-confetti';
+import piecesHd from './assets/pieces_hd.png';
 
 export default function App() {
   const { darkWood, lightWood } = useWoodTextures();
+  const [viewMode, setViewMode] = useState('3d'); // '3d' or '2d'
   const [animationKey, setAnimationKey] = useState(0);
   const [selectedPiece, setSelectedPiece] = useState('king');
 
@@ -63,69 +65,135 @@ export default function App() {
       {/* Background Subtle Gradient overlay */}
       <div className="bg-gradient" />
 
-      {/* R3F Canvas for the 3D Render */}
-      <div className="canvas-wrapper">
-        <Canvas
-          shadows
-          camera={{ position: [-1.8, 2.5, 5.8], fov: 42 }}
-        >
-          {/* Neutral Warm Studio Background Color */}
-          <color attach="background" args={["#e4ded5"]} />
-          
-          {/* Soft fog to blend the board edges into the background */}
-          <fog attach="fog" args={["#e4ded5", 8, 16]} />
-
-          {/* Lighting Rig */}
-          <Lighting />
-
-          {/* Dynamic 3D Scene content (keyed to reset animations) */}
-          <group key={animationKey} position={[0, -0.2, 0]}>
-            <ChessBoard darkWood={darkWood} lightWood={lightWood} />
-            <King wood={darkWood} />
-            <Queen wood={lightWood} />
-            <Bishop wood={darkWood} />
-            <Knight wood={darkWood} />
-            <Pawn wood={lightWood} />
-          </group>
-
-          {/* Sparkles / Dust and HDR reflections */}
-          <Environment />
-
-          {/* 
-            Orbit Controls: 
-            User can rotate/pan around, focused on the King's torso height.
-            Damping is active for premium smooth inertia.
-          */}
-          <OrbitControls
-            enableDamping
-            dampingFactor={0.05}
-            target={[0, 1.0, 0]}
-            maxPolarAngle={Math.PI / 2.08} // Prevent camera going below the board
-            minDistance={2.8}
-            maxDistance={9}
-          />
-
-          {/* Cinematic Depth of Field and Bloom for Sunlight Glow */}
-          <EffectComposer>
-            <DepthOfField
-              target={[0, 1.0, 0]} // Focus on the King
-              focalLength={0.32}     // Shallow depth of field
-              bokehScale={3.5}       // Beautiful bokeh blur size
+      {/* 3D Render View */}
+      {viewMode === '3d' && (
+        <div className="canvas-wrapper animate-fade-in">
+          <Canvas
+            shadows
+            camera={{ position: [-1.8, 2.5, 5.8], fov: 42 }}
+          >
+            <color attach="background" args={["#e4ded5"]} />
+            <fog attach="fog" args={["#e4ded5", 8, 16]} />
+            <Lighting />
+            <group key={animationKey} position={[0, -0.2, 0]}>
+              <ChessBoard darkWood={darkWood} lightWood={lightWood} />
+              <King wood={darkWood} />
+              <Queen wood={lightWood} />
+              <Bishop wood={darkWood} />
+              <Knight wood={darkWood} />
+              <Pawn wood={lightWood} />
+            </group>
+            <Environment />
+            <OrbitControls
+              enableDamping
+              dampingFactor={0.05}
+              target={[0, 1.0, 0]}
+              maxPolarAngle={Math.PI / 2.08}
+              minDistance={2.8}
+              maxDistance={9}
             />
-            <Bloom
-              intensity={0.4}
-              luminanceThreshold={0.85}
-              luminanceSmoothing={0.9}
-            />
-          </EffectComposer>
-        </Canvas>
-      </div>
+            <EffectComposer>
+              <DepthOfField
+                target={[0, 1.0, 0]}
+                focalLength={0.32}
+                bokehScale={3.5}
+              />
+              <Bloom
+                intensity={0.4}
+                luminanceThreshold={0.85}
+                luminanceSmoothing={0.9}
+              />
+            </EffectComposer>
+          </Canvas>
+        </div>
+      )}
+
+      {/* 2D High-Definition Art Gallery View */}
+      {viewMode === '2d' && (
+        <div className="hd-gallery-wrapper animate-fade-in">
+          <div className="hd-image-frame">
+            <img src={piecesHd} alt="Cute Chess Mates HD" className="hd-image" />
+            
+            {/* Interactive Hotspots pointing to the characters in the HD image */}
+            {/* Bishop (Far Left) */}
+            <button 
+              className={`hotspot-btn ${selectedPiece === 'bishop' ? 'active' : ''}`}
+              style={{ left: '20%', top: '56%' }}
+              onClick={() => setSelectedPiece('bishop')}
+              title="Select Bishop"
+            >
+              <div className="pulse-ring"></div>
+              <div className="pulse-dot"></div>
+            </button>
+
+            {/* Queen (Left Center) */}
+            <button 
+              className={`hotspot-btn ${selectedPiece === 'queen' ? 'active' : ''}`}
+              style={{ left: '35%', top: '60%' }}
+              onClick={() => setSelectedPiece('queen')}
+              title="Select Queen"
+            >
+              <div className="pulse-ring"></div>
+              <div className="pulse-dot"></div>
+            </button>
+
+            {/* King (Center) */}
+            <button 
+              className={`hotspot-btn ${selectedPiece === 'king' ? 'active' : ''}`}
+              style={{ left: '50%', top: '44%' }}
+              onClick={() => setSelectedPiece('king')}
+              title="Select King"
+            >
+              <div className="pulse-ring"></div>
+              <div className="pulse-dot"></div>
+            </button>
+
+            {/* Pawn (Front Right) */}
+            <button 
+              className={`hotspot-btn ${selectedPiece === 'pawn' ? 'active' : ''}`}
+              style={{ left: '63%', top: '74%' }}
+              onClick={() => setSelectedPiece('pawn')}
+              title="Select Pawn"
+            >
+              <div className="pulse-ring"></div>
+              <div className="pulse-dot"></div>
+            </button>
+
+            {/* Knight (Far Right) */}
+            <button 
+              className={`hotspot-btn ${selectedPiece === 'knight' ? 'active' : ''}`}
+              style={{ left: '79%', top: '55%' }}
+              onClick={() => setSelectedPiece('knight')}
+              title="Select Knight"
+            >
+              <div className="pulse-ring"></div>
+              <div className="pulse-dot"></div>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Header UI Overlay */}
       <header className="app-header">
         <div className="header-badge">3D Character Showcase</div>
         <h1>Chess Mates</h1>
         <p>An interactive Pixar-style 3D recreation of chess pieces built with React Three Fiber.</p>
+
+        {/* View Toggle Buttons */}
+        <div className="view-toggle">
+          <button 
+            className={`toggle-btn ${viewMode === '3d' ? 'active' : ''}`}
+            onClick={() => setViewMode('3d')}
+          >
+            3D Interactive
+          </button>
+          <button 
+            className={`toggle-btn ${viewMode === '2d' ? 'active' : ''}`}
+            onClick={() => setViewMode('2d')}
+          >
+            2D Ultra-HD Art
+          </button>
+        </div>
       </header>
 
       {/* Interactive Control & Info Panel */}
@@ -152,10 +220,18 @@ export default function App() {
         </div>
 
         <div className="action-row">
-          <button className="btn-primary" onClick={triggerReset}>
-            Replay Drop Intro 💫
-          </button>
-          <p className="hint-text">Drag to rotate the camera. Pinch/scroll to zoom.</p>
+          {viewMode === '3d' ? (
+            <button className="btn-primary" onClick={triggerReset}>
+              Replay Drop Intro 💫
+            </button>
+          ) : (
+            <div className="gallery-tag">Ultra-HD Art Mode</div>
+          )}
+          <p className="hint-text">
+            {viewMode === '3d' 
+              ? 'Drag to rotate the camera. Pinch/scroll to zoom.' 
+              : 'Click the glowing hotspots to inspect individual characters.'}
+          </p>
         </div>
       </div>
     </main>

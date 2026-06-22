@@ -271,3 +271,171 @@ html, body, #root {
     max-height: 100px;
   }
 }
+
+/* View Mode Toggle Switch */
+.view-toggle {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 1rem;
+  background: rgba(45, 25, 16, 0.05);
+  padding: 0.25rem;
+  border-radius: 10px;
+  width: fit-content;
+  border: 1px solid rgba(45, 25, 16, 0.06);
+  pointer-events: auto;
+}
+
+.toggle-btn {
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+  color: var(--text-primary);
+}
+
+.toggle-btn.active {
+  background: var(--accent-color);
+  color: #fffcf8;
+  box-shadow: 0 2px 6px rgba(176, 125, 98, 0.25);
+}
+
+/* 2D HD Gallery View styling */
+.hd-gallery-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--bg-color);
+  pointer-events: auto;
+}
+
+.hd-image-frame {
+  position: relative;
+  width: 100%;
+  max-width: 650px;
+  aspect-ratio: 1 / 1;
+  border-radius: 24px;
+  border: 1px solid var(--glass-border);
+  background: #eae3da;
+  box-shadow: 0 25px 60px rgba(45, 25, 16, 0.12);
+  overflow: hidden;
+}
+
+.hd-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Glowing Hotspots overlayed on HD Image */
+.hotspot-btn {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.pulse-ring {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--accent-color);
+  border-radius: 50%;
+  animation: hotspotPulse 2.2s infinite ease-out;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.pulse-dot {
+  width: 12px;
+  height: 12px;
+  background-color: var(--accent-color);
+  border-radius: 50%;
+  border: 2px solid #fffcf8;
+  box-shadow: 0 0 10px rgba(176, 125, 98, 0.8);
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Hotspot Hover & Active States */
+.hotspot-btn:hover .pulse-dot,
+.hotspot-btn.active .pulse-dot {
+  background-color: var(--text-primary);
+  transform: scale(1.35);
+  box-shadow: 0 0 14px var(--text-primary);
+}
+
+.hotspot-btn:hover .pulse-ring,
+.hotspot-btn.active .pulse-ring {
+  border-color: var(--text-primary);
+}
+
+.gallery-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.8rem;
+  background: rgba(176, 125, 98, 0.1);
+  color: var(--accent-color);
+  border-radius: 8px;
+  border: 1px solid rgba(176, 125, 98, 0.15);
+}
+
+/* Global Keyframes & Utility classes */
+@keyframes hotspotPulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(2.0);
+    opacity: 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.45s ease-out both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Mobile overrides for HD Frame sizing */
+@media (max-width: 768px) {
+  .hd-image-frame {
+    max-width: 90vw;
+    margin-top: 6rem;
+  }
+}
+
