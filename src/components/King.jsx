@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function King({ wood }) {
+export default function King({ wood, position = [0, 0, 0] }) {
   const groupRef = useRef();
   const leftEyeRef = useRef();
   const rightEyeRef = useRef();
@@ -133,7 +133,7 @@ export default function King({ wood }) {
   );
 
   return (
-    <group ref={groupRef} position={[0, 6, 0]}>
+    <group ref={groupRef} position={position}>
       {/* Main King Body Lathe */}
       <mesh castShadow receiveShadow>
         <latheGeometry args={[points, 32]} />

@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function Pawn({ wood }) {
+export default function Pawn({ wood, position = [0.8, 0, 1.3] }) {
   const groupRef = useRef();
   const leftEyeRef = useRef();
   const rightEyeRef = useRef();
@@ -124,7 +124,7 @@ export default function Pawn({ wood }) {
   );
 
   return (
-    <group ref={groupRef} position={[0.8, 6, 1.3]}>
+    <group ref={groupRef} position={position}>
       {/* Lathe Base */}
       <mesh castShadow receiveShadow>
         <latheGeometry args={[basePoints, 32]} />

@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function Bishop({ wood }) {
+export default function Bishop({ wood, position = [-2.6, 0, -1.0] }) {
   const groupRef = useRef();
   const eyeLidsRef = useRef();
   const leftEyeRef = useRef();
@@ -111,7 +111,7 @@ export default function Bishop({ wood }) {
   );
 
   return (
-    <group ref={groupRef} position={[-2.6, 6, -1.0]}>
+    <group ref={groupRef} position={position}>
       {/* 360-degree Lower Body */}
       <mesh castShadow receiveShadow>
         <latheGeometry args={[bodyPoints, 32]} />

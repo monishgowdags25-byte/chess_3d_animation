@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function Queen({ wood }) {
+export default function Queen({ wood, position = [-1.4, 0, 0.5] }) {
   const groupRef = useRef();
   const leftEyeRef = useRef();
   const rightEyeRef = useRef();
@@ -166,7 +166,7 @@ export default function Queen({ wood }) {
   }, [woodMaterial]);
 
   return (
-    <group ref={groupRef} position={[-1.4, 6, 0.5]}>
+    <group ref={groupRef} position={position}>
       {/* Queen Base and Head */}
       <mesh castShadow receiveShadow>
         <latheGeometry args={[points, 32]} />

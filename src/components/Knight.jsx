@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function Knight({ wood }) {
+export default function Knight({ wood, position = [1.6, 0, -0.4] }) {
   const groupRef = useRef();
   const leftEyeRef = useRef();
   const rightEyeRef = useRef();
@@ -117,7 +117,7 @@ export default function Knight({ wood }) {
   );
 
   return (
-    <group ref={groupRef} position={[1.6, 6, -0.4]}>
+    <group ref={groupRef} position={position}>
       {/* 360-degree Lower Base */}
       <mesh castShadow receiveShadow>
         <latheGeometry args={[basePoints, 32]} />

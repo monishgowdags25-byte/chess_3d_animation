@@ -13,28 +13,13 @@ import Lighting from './components/Lighting';
 import Environment from './components/Environment';
 import confetti from 'canvas-confetti';
 
-// Import individual high-definition piece images
-import kingHd from './assets/king_hd.png';
-import queenHd from './assets/queen_hd.png';
-import bishopHd from './assets/bishop_hd.png';
-import knightHd from './assets/knight_hd.png';
-import pawnHd from './assets/pawn_hd.png';
-
 export default function App() {
   const { darkWood, lightWood } = useWoodTextures();
-  const [viewMode, setViewMode] = useState('2d'); // Set default to 2D view to display the individual HD pieces first
+  const [viewMode, setViewMode] = useState('2d');
   const [animationKey, setAnimationKey] = useState(0);
   const [selectedPiece, setSelectedPiece] = useState('king');
 
   const piecesList = ['king', 'queen', 'bishop', 'knight', 'pawn'];
-
-  const pieceImages = {
-    king: kingHd,
-    queen: queenHd,
-    bishop: bishopHd,
-    knight: knightHd,
-    pawn: pawnHd,
-  };
 
   const handlePrevPiece = () => {
     const currentIndex = piecesList.indexOf(selectedPiece);
@@ -136,15 +121,54 @@ export default function App() {
         </div>
       )}
 
-      {/* 2D High-Definition Art Gallery View (Individual Portrait Mode) */}
+      {/* 2D High-Definition Art Gallery View (Individual Portrait Mode - Live Rendered!) */}
       {viewMode === '2d' && (
         <div className="hd-gallery-wrapper animate-fade-in">
           <div className="hd-image-frame portrait-frame">
-            <img 
-              src={pieceImages[selectedPiece]} 
-              alt={characterDescriptions[selectedPiece].name} 
-              className="hd-image portrait-image" 
-            />
+            {/* Live React Three Fiber canvas rendering the selected piece in close-up */}
+            <Canvas
+              shadows
+              camera={{ position: [0, 1.42, 3.2], fov: 36 }}
+            >
+              <color attach="background" args={["#e4ded5"]} />
+              <Lighting />
+              
+              <group key={selectedPiece} position={[0, -0.65, 0]}>
+                {selectedPiece === 'king' && <King wood={darkWood} position={[0, 0, 0]} />}
+                {selectedPiece === 'queen' && <Queen wood={lightWood} position={[0, 0, 0]} />}
+                {selectedPiece === 'bishop' && <Bishop wood={darkWood} position={[0, 0, 0]} />}
+                {selectedPiece === 'knight' && (
+                  <group rotation={[0, -Math.PI / 4.8, 0]}>
+                    <Knight wood={darkWood} position={[0, 0, 0]} />
+                  </group>
+                )}
+                {selectedPiece === 'pawn' && <Pawn wood={lightWood} position={[0, 0, 0]} />}
+              </group>
+
+              <Environment />
+              
+              <OrbitControls
+                enableDamping
+                dampingFactor={0.05}
+                target={[0, 1.0, 0]}
+                minDistance={1.8}
+                maxDistance={5.0}
+                maxPolarAngle={Math.PI / 2.05}
+              />
+
+              <EffectComposer>
+                <DepthOfField
+                  target={[0, 1.0, 0]}
+                  focalLength={0.4}
+                  bokehScale={4.0}
+                />
+                <Bloom
+                  intensity={0.4}
+                  luminanceThreshold={0.8}
+                  luminanceSmoothing={0.9}
+                />
+              </EffectComposer>
+            </Canvas>
             
             {/* Arrow Navigation controls overlayed inside the frame */}
             <button 
